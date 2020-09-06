@@ -101,15 +101,13 @@ fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailur
 
     file.write_all(&content.as_bytes())?;
 
-    println!("{} created", dir);
+    println!("{:?} created", path);
 
     Ok(())
 }
 
 fn main() -> Result<(), exitfailure::ExitFailure> {
     let args: Vec<String> = std::env::args().collect();
-
-    println!("Arguments Provided, {}", args.len());
 
     match args.len() {
         2 => show_secondary_help(&args[1]),
