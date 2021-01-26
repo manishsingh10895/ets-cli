@@ -76,6 +76,8 @@ export interface {t_doc_name} extends Document, {t_name} {{
 
 export interface {t_name} {{
     _id: any,
+    createdAt: Date,
+    updatedAt: Date,
 }}
 
 export const {t_schema_name}: Schema = new Schema({{
