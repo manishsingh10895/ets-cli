@@ -1,7 +1,7 @@
 use inflector::Inflector;
 
 pub fn gen_route_content(name: &str) -> (String, String) {
-    let t_name: String = name.to_title_case() + "Route";
+    let t_name: String = name.to_class_case() + "Route";
     let content = format!(
         r#"
 import {{Express, Router}} from "express";
@@ -22,7 +22,7 @@ export default class {t_name} {{
 }
 
 pub fn gen_service_content(name: &str) -> (String, String) {
-    let t_name: String = name.to_title_case() + "Service";
+    let t_name: String = name.to_class_case() + "Service";
     let content = format!(
         r#"
 import logger from "../helpers/logger";
@@ -41,7 +41,7 @@ export default new {t_name}();
 }
 
 pub fn gen_controller_content(name: &str) -> (String, String) {
-    let t_name: String = name.to_title_case() + "Controller";
+    let t_name: String = name.to_class_case() + "Controller";
     let content = format!(
         r#"
 import {{ Request, Response }} from 'express';
@@ -62,7 +62,7 @@ export default class {t_name} {{
 }
 
 pub fn gen_model(name: &str) -> (String, String) {
-    let cap_name: String = format!("{}", name.to_title_case().clone());
+    let cap_name: String = format!("{}", name.to_class_case().clone());
     let t_name: String = format!("I{}", cap_name.clone());
     let t_doc_name: String = format!("I{}", cap_name.clone() + "Document");
     let t_schema_name: String = cap_name.clone() + "Schema";
@@ -97,7 +97,7 @@ export const {cap_name}: Model<{t_doc_name}> = model<{t_doc_name}>('User', {t_sc
 }
 
 pub fn gen_request_schema(name: &str) -> (String, String) {
-    let t_name: String = name.to_title_case() + "RequestSchema";
+    let t_name: String = name.to_class_case() + "RequestSchema";
     let content = format!(
         r#"
 import {{ checkSchema, ValidationSchema }} from 'express-validator';
@@ -113,7 +113,7 @@ export const {t_name}: ValidationSchema = {{
 }
 
 pub fn gen_middleware_content(name: &str) -> (String, String) {
-    let t_name: String = name.to_title_case() + "Middleware";
+    let t_name: String = name.to_class_case() + "Middleware";
     let content = format!(
         r#"
 /**

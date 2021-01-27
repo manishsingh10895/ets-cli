@@ -42,7 +42,6 @@ fn show_secondary_help(primary: &str) {
     println!("{}", help);
 }
 
-
 fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailure> {
     let mut content: String = String::new();
     let file_name: String;
