@@ -97,6 +97,22 @@ fn _write_file(dir: &str, content_res: (String, String)) -> Result<(), exitfailu
     Ok(())
 }
 
+fn _generate_request_schema(name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let content_res = helper::gen_request_schema(&name);
+    let dir = format!("{}{}", ROOT, "/request-schemas");
+    _write_file(&dir, content_res)?;
+
+    Ok(())
+}
+
+fn _generate_middlewares(name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let content_res = helper::gen_middleware_content(&name);
+    let dir = format!("{}{}", ROOT, "/middlewares");
+    _write_file(&dir, content_res)?;
+
+    Ok(())
+}
+
 fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailure> {
     let mut content: String = String::new();
     let file_name: String;
@@ -111,9 +127,7 @@ fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailur
             _generate_controller(&name)?;
         }
         "rs" | "request-schema" => {
-            content_res = helper::gen_request_schema(&name);
-            dir = format!("{}{}", ROOT, "/request-schemas");
-            println!("{}", content);
+            _generate_request_schema(&name)?;
         }
         "sc" | "scaffold" => {
             _generate_controller(&name)?;
@@ -125,9 +139,7 @@ fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailur
             _generate_model(&name)?;
         }
         "mw" | "middleware" => {
-            content_res = helper::gen_middleware_content(&name);
-            dir = format!("{}{}", ROOT, "/middlewares");
-            println!("{}", content);
+            _generate_middlewares(&name)?;
         }
         "s" | "service" => {
             _generate_service(&name)?;
@@ -137,8 +149,6 @@ fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailur
             std::process::exit(0);
         }
     }
-    _write_file(&dir, content_res)?;
-
     Ok(())
 }
 
