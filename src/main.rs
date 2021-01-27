@@ -33,6 +33,7 @@ fn show_secondary_help(primary: &str) {
                     request-schema || rs -> generate api request schema
                     middleware || mw generate new middleware
                     model || m -> generate new model
+                    scaffold || s -> generate service model and controller
             "#;
         }
 
@@ -42,51 +43,42 @@ fn show_secondary_help(primary: &str) {
     println!("{}", help);
 }
 
-fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailure> {
-    let mut content: String = String::new();
-    let file_name: String;
-    let dir: String;
-    let content_res: (String, String);
+fn _generate_route(name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let content_res = helper::gen_route_content(&name);
+    let dir = format!("{}{}", ROOT, "/routes");
 
-    match to_generate {
-        "r" | "route" => {
-            content_res = helper::gen_route_content(&name);
-            dir = format!("{}{}", ROOT, "/routes");
-            println!("{}", content);
-        }
-        "c" | "controller" => {
-            content_res = helper::gen_controller_content(&name);
-            dir = format!("{}{}", ROOT, "/controllers");
-            println!("{}", content);
-        }
-        "rs" | "request-schema" => {
-            content_res = helper::gen_request_schema(&name);
-            dir = format!("{}{}", ROOT, "/request-schemas");
-            println!("{}", content);
-        }
-        "m" | "model" => {
-            content_res = helper::gen_model(&name);
-            dir = format!("{}{}", ROOT, "/models");
-            println!("{}", content);
-        }
-        "mw" | "middleware" => {
-            content_res = helper::gen_middleware_content(&name);
-            dir = format!("{}{}", ROOT, "/middlewares");
-            println!("{}", content);
-        }
-        "s" | "service" => {
-            content_res = helper::gen_service_content(&name);
-            dir = format!("{}{}", ROOT, "/services");
-            println!("{}", content);
-        }
-        _ => {
-            show_secondary_help("g");
-            std::process::exit(0);
-        }
-    }
+    _write_file(&dir, content_res)?;
 
-    content = content_res.0;
-    file_name = content_res.1;
+    Ok(())
+}
+
+fn _generate_controller(name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let content_res = helper::gen_controller_content(&name);
+    let dir = format!("{}{}", ROOT, "/controllers");
+    _write_file(&dir, content_res)?;
+
+    Ok(())
+}
+
+fn _generate_service(name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let content_res = helper::gen_service_content(&name);
+    let dir = format!("{}{}", ROOT, "/services");
+    _write_file(&dir, content_res)?;
+
+    Ok(())
+}
+
+fn _generate_model(name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let content_res = helper::gen_model(&name);
+    let dir = format!("{}{}", ROOT, "/models");
+    _write_file(&dir, content_res)?;
+
+    Ok(())
+}
+
+fn _write_file(dir: &str, content_res: (String, String)) -> Result<(), exitfailure::ExitFailure> {
+    let content = content_res.0;
+    let file_name = content_res.1;
 
     let _path = format!("{}/{}", dir.clone(), file_name.as_str());
 
@@ -101,6 +93,51 @@ fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailur
     file.write_all(&content.as_bytes())?;
 
     println!("{:?} created", path);
+
+    Ok(())
+}
+
+fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailure> {
+    let mut content: String = String::new();
+    let file_name: String;
+    let mut dir: String = String::new();
+    let mut content_res: (String, String) = (String::from(""), String::from(""));
+
+    match to_generate {
+        "r" | "route" => {
+            _generate_route(&name)?;
+        }
+        "c" | "controller" => {
+            _generate_controller(&name)?;
+        }
+        "rs" | "request-schema" => {
+            content_res = helper::gen_request_schema(&name);
+            dir = format!("{}{}", ROOT, "/request-schemas");
+            println!("{}", content);
+        }
+        "sc" | "scaffold" => {
+            _generate_controller(&name)?;
+            _generate_model(&name)?;
+            _generate_service(&name)?;
+            _generate_route(&name)?;
+        }
+        "m" | "model" => {
+            _generate_model(&name)?;
+        }
+        "mw" | "middleware" => {
+            content_res = helper::gen_middleware_content(&name);
+            dir = format!("{}{}", ROOT, "/middlewares");
+            println!("{}", content);
+        }
+        "s" | "service" => {
+            _generate_service(&name)?;
+        }
+        _ => {
+            show_secondary_help("g");
+            std::process::exit(0);
+        }
+    }
+    _write_file(&dir, content_res)?;
 
     Ok(())
 }
