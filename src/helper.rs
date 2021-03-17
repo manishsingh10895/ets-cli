@@ -85,7 +85,7 @@ export const {t_schema_name}: Schema = new Schema({{
     updatedAt: {{ type: Date, default: new Date() }}
 }}) 
 
-export const {cap_name}: Model<{t_doc_name}> = model<{t_doc_name}>('User', {t_schema_name});
+export const {cap_name}: Model<{t_doc_name}> = model<{t_doc_name}>('{t_schema_name}', {t_schema_name});
         "#,
         t_name = t_name,
         t_doc_name = t_doc_name,
