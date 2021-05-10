@@ -1,13 +1,14 @@
 mod helper;
 use colored::*;
-use std::fs;
+use std::{fs, path, primitive, process::Command};
 use std::io::Write;
 
 const ROOT: &str = "src";
 
 fn show_help() {
     let help = r#"
-        usage: 
+        usage:
+            n -> to create a new project
             g -> to generate a new file
             route || r -> generate route
             controller || c -> generate controller
@@ -152,19 +153,44 @@ fn generate(to_generate: &str, name: &str) -> Result<(), exitfailure::ExitFailur
     Ok(())
 }
 
+fn _create_new_dir(name: &str) -> Result<(), exitfailure::ExitFailure>{
+
+    let res = Command::new("mkdir")
+        .arg(name)
+        .spawn()?;
+    
+    Ok(())
+}
+
+fn new_project(name :&str) -> Result<(), exitfailure::ExitFailure> {
+    Command::new("git")
+        .arg("clone")
+        .arg("https://github.com/manishsingh10895/express-ts-starter")
+        .arg(name)
+        .output()?;
+
+    Ok(())
+}
+
 fn main() -> Result<(), exitfailure::ExitFailure> {
     let args: Vec<String> = std::env::args().collect();
+
+    println!("{}",args.len());
 
     match args.len() {
         2 => show_secondary_help(&args[1]),
 
         3 => {
-            println!("{}", "Invalid number of arguments".to_string().red());
+            match args[1].as_str() {
+                "n" | "new" => new_project(&args[2])?,
+                _ => println!("Invalid Argument")
+            }
 
             std::process::exit(1);
         }
         4 => match args[1].as_str() {
             "g" | "generate" => generate(&args[2], &args[3])?,
+            // "n" | "new" => new_project(&args[2])?,
             _ => println!("Invalid"),
         },
 
